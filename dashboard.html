@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .navbar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .navbar-brand:hover, .nav-link:hover {
+        color: #e9ecef !important;
+        transform: scale(1.05);
+        transition: all 0.3s ease;
+    }
+    .navbar-toggler {
+        border: none;
+        background: rgba(255,255,255,0.1);
+    }
+    .navbar-toggler:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
+    }
+    .card {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: none;
+        overflow: hidden;
+        position: relative;
+    }
+    .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .stat-icon {
+        font-size: 3rem;
+        color: #667eea;
+        transition: transform 0.3s ease;
+    }
+    .card:hover .stat-icon {
+        transform: scale(1.1);
+    }
+    .display-4 {
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .chart-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        min-height: 350px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    .chart-container::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+        0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+        50% { transform: translate(-50%, -50%) rotate(180deg); }
+    }
+    .chart-title {
+        color: white;
+        font-weight: bold;
+        margin-bottom: 15px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .container {
+        max-width: 1200px;
+    }
+    .fade-in {
+        animation: fadeIn 0.8s ease-in;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    /* Dark Mode Styles */
+    .dark-mode {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: #ecf0f1;
+    }
+    .dark-mode .card {
+        background: rgba(44, 62, 80, 0.9);
+        color: #ecf0f1;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    .dark-mode .navbar {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    }
+    .dark-mode .chart-container {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    }
+    .dark-mode .display-4 {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .dark-mode .text-primary {
+        color: #3498db !important;
+    }
+    .dark-mode .text-success {
+        color: #27ae60 !important;
+    }
+    .dark-mode .text-info {
+        color: #17a2b8 !important;
+    }
+    .dark-mode .text-warning {
+        color: #f39c12 !important;
+    }
+
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);">
+<div class="container">
+<a class="navbar-brand" href="/dashboard"><i class="bi bi-shop"></i> E-Commerce Admin</a>
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav ms-auto">
+<li class="nav-item">
+<a class="nav-link active" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="/products"><i class="bi bi-box-seam"></i> Products</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="/customers"><i class="bi bi-people"></i> Customers</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="/billing"><i class="bi bi-receipt"></i> Billing</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+</li>
+<li class="nav-item">
+<button class="btn btn-link nav-link" id="themeToggle" onclick="toggleTheme()">
+<i class="bi bi-moon-stars"></i> Dark Mode
+</button>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+
+<div class="container mt-5">
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+{{ message }}
+<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<h1 class="text-center mb-4 text-primary"><i class="bi bi-speedometer2"></i> Dashboard</h1>
+
+<div class="row g-4">
+
+<div class="col-md-4">
+<div class="card p-4 text-center fade-in">
+    <div class="card-body">
+        <i class="bi bi-box-seam stat-icon pulse"></i>
+        <h5 class="card-title mt-3">Products</h5>
+        <p class="card-text display-4 text-success">{{products}}</p>
+    </div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card p-4 text-center fade-in">
+    <div class="card-body">
+        <i class="bi bi-people stat-icon pulse"></i>
+        <h5 class="card-title mt-3">Customers</h5>
+        <p class="card-text display-4 text-info">{{customers}}</p>
+    </div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card p-4 text-center fade-in">
+    <div class="card-body">
+        <i class="bi bi-currency-rupee stat-icon pulse"></i>
+        <h5 class="card-title mt-3">Revenue</h5>
+        <p class="card-text display-4 text-warning">₹{{revenue}}</p>
+    </div>
+</div>
+</div>
+
+</div>
+
+<div class="row mt-4">
+<div class="col-md-6">
+<div class="chart-container fade-in">
+<h5 class="text-center text-white mb-3"><i class="bi bi-receipt"></i> Daily Sales Overview</h5>
+<canvas id="billingChart" data-daily-sales='{{ daily_sales | tojson }}'></canvas>
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="chart-container fade-in">
+<h5 class="text-center text-white mb-3"><i class="bi bi-box-seam"></i> Product Stock Levels</h5>
+<canvas id="stockChart" data-stock='{{ stock_data | tojson }}'></canvas>
+</div>
+</div>
+</div>
+
+</div>
+
+<script>
+const billingCanvas = document.getElementById("billingChart");
+const dailySalesData = JSON.parse(billingCanvas.dataset.dailySales);
+
+const salesLabels = dailySalesData.map(item => {
+    const date = new Date(item[0]);
+    return date.toLocaleDateString();
+});
+const salesValues = dailySalesData.map(item => item[1]);
+
+new Chart(billingCanvas, {
+    type: "line",
+    data: {
+        labels: salesLabels,
+        datasets: [{
+            label: "Daily Sales (₹)",
+            data: salesValues,
+            backgroundColor: "rgba(255, 193, 7, 0.2)",
+            borderColor: "#ffc107",
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: "#ffc107",
+            pointBorderColor: "#fff",
+            pointBorderWidth: 2,
+            pointRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: true,
+                labels: {
+                    font: {
+                        size: 14
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(255,255,255,0.2)'
+                },
+                ticks: {
+                    color: 'white',
+                    callback: function(value) {
+                        return '₹' + value.toLocaleString();
+                    }
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(255,255,255,0.2)'
+                },
+                ticks: {
+                    color: 'white',
+                    maxRotation: 45,
+                    minRotation: 45
+                }
+            }
+        }
+    }
+});
+
+const stockCanvas = document.getElementById("stockChart");
+const stockData = JSON.parse(stockCanvas.dataset.stock);
+
+const stockLabels = stockData.map(item => item[0]);
+const stockValues = stockData.map(item => item[1]);
+
+new Chart(stockCanvas, {
+    type: "bar",
+    data: {
+        labels: stockLabels,
+        datasets: [{
+            label: "Stock Quantity",
+            data: stockValues,
+            backgroundColor: "#28a745",
+            borderColor: "#28a745",
+            borderWidth: 2,
+            borderRadius: 10,
+            borderSkipped: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: true,
+                labels: {
+                    font: {
+                        size: 14
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(255,255,255,0.2)'
+                },
+                ticks: {
+                    color: 'white'
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(255,255,255,0.2)'
+                },
+                ticks: {
+                    color: 'white',
+                    maxRotation: 45,
+                    minRotation: 45
+                }
+            }
+        }
+    }
+});
+
+// Theme Toggle Functionality
+const themeToggle = document.getElementById('themeToggle');
+const body = document.body;
+
+// Check for saved theme preference or default to light mode
+const currentTheme = localStorage.getItem('theme') || 'light';
+if (currentTheme === 'dark') {
+    body.classList.add('dark-mode');
+    themeToggle.innerHTML = '<i class="bi bi-sun"></i> Light Mode';
+}
+
+themeToggle.addEventListener('click', () => {
+    body.classList.toggle('dark-mode');
+    const isDark = body.classList.contains('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    themeToggle.innerHTML = isDark ? '<i class="bi bi-sun"></i> Light Mode' : '<i class="bi bi-moon"></i> Dark Mode';
+    
+    // Re-render charts with new theme
+    setTimeout(() => {
+        location.reload();
+    }, 300);
+});
+</script>
+
+</body>
+</html>
